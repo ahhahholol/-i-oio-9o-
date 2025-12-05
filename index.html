@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>VolixyHub.cc</title>
+    <title>VolixyHub.cc - Movies</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{background:#0a001a;color:#e0c0ff;font-family:system-ui;overflow:hidden;height:100vh;position:relative;}
@@ -12,14 +12,8 @@
         .card{background:rgba(100,0,180,0.5);border-radius:15px;overflow:hidden;}
         iframe,video{width:100%;height:250px;border:none;}
         .title{padding:10px;color:#ff00ff;font-weight:bold;text-align:center;}
-        
-        /* PLUS BUTTON */
         #plus{position:fixed;bottom:20px;right:20px;background:#ff00ff;width:70px;height:70px;border-radius:50%;font-size:40px;color:white;border:none;box-shadow:0 0 50px #ff00ff;z-index:100;cursor:pointer;}
-        
-        /* DARK OVERLAY */
         #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99;}
-        
-        /* MODAL */
         #modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#200040;padding:30px;border-radius:20px;width:90%;max-width:400px;box-shadow:0 0 80px #ff00ff;z-index:100;}
         input,button{margin:10px 0;width:100%;padding:15px;border-radius:12px;border:none;font-size:16px;}
         button{background:#ff00ff;color:white;cursor:pointer;}
@@ -27,17 +21,10 @@
     </style>
 </head>
 <body>
-
-<!-- FALLING SNOW BACKGROUND -->
 <canvas></canvas>
 
-<!-- PLUS BUTTON (bottom right) -->
 <button id="plus" onclick="openModal()">+</button>
-
-<!-- DARK OVERLAY -->
 <div id="overlay" onclick="closeModal()"></div>
-
-<!-- POST MOVIE POPUP -->
 <div id="modal">
     <h2 style="color:#ff00ff;text-align:center;">Leak Movie</h2>
     <input type="text" id="name" placeholder="Movie name">
@@ -46,7 +33,6 @@
     <button onclick="closeModal()">Cancel</button>
 </div>
 
-<!-- WHERE MOVIES APPEAR -->
 <div id="grid"></div>
 
 <script>
@@ -60,60 +46,23 @@ function closeModal() {
     document.getElementById('name').value = '';
     document.getElementById('url').value = '';
 }
-
 function leak() {
     const name = document.getElementById('name').value.trim();
     const url = document.getElementById('url').value.trim();
-    if (!name || !url) return alert("Fill both fields!");
+    if (!name || !url) return alert("Fill both!");
 
-    let player;
-    if (url.includes('vidify.top')) {
-        player = `<iframe src="${url}" allowfullscreen></iframe>`;
-    } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        const embedUrl = url.replace('watch?v=', 'embed/').split('&')[0];
-        player = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
-    } else {
-        player = `<video controls><source src="${url}"></video>`;
-    }
+    let player = url.includes('vidify.top') ? `<iframe src="${url}" allowfullscreen></iframe>` :
+                 url.includes('youtube.com') || url.includes('youtu.be') ? `<iframe src="${url.replace('watch?v=','embed/').split('&')[0]}"></iframe>` :
+                 `<video controls><source src="${url}"></video>`;
 
-    const card = `
-        <div class="card">
-            ${player}
-            <div class="title">${name}</div>
-        </div>
-    `;
-
-    document.getElementById('grid').insertAdjacentHTML('beforeend', card);
+    document.getElementById('grid').innerHTML += `<div class="card">${player}<div class="title">${name}</div></div>`;
     closeModal();
 }
 
-// === PURPLE FALLING SNOW BACKGROUND ===
-let c = document.querySelector("canvas");
-let ctx = c.getContext("2d");
-c.width = innerWidth;
-c.height = innerHeight;
-let particles = [];
-for(let i = 0; i < 400; i++) {
-    particles.push({
-        x: Math.random() * c.width,
-        y: Math.random() * c.height,
-        r: Math.random() * 3 + 1,
-        spd: Math.random() * 1.5 + 0.5
-    });
-}
-function snow() {
-    ctx.clearRect(0, 0, c.width, c.height);
-    particles.forEach(p => {
-        ctx.fillStyle = "rgba(255, 200, 255, 0.9)";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-        p.y += p.spd;
-        if (p.y > c.height) p.y = -10;
-    });
-    requestAnimationFrame(snow);
-}
-snow();
+// Snow background
+let c=document.querySelector("canvas"),ctx=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+let s=[];for(let i=0;i<400;i++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*3+1,spd:Math.random()*1.5+0.5});
+function snow(){ctx.clearRect(0,0,c.width,c.height);s.forEach(p=>{ctx.fillStyle="rgba(255,200,255,0.9)";ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();p.y+=p.spd;if(p.y>c.height)p.y=-10;});requestAnimationFrame(snow);}snow();
 </script>
 </body>
 </html>
