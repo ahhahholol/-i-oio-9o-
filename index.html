@@ -1,0 +1,56 @@
+<!-- PLUS BUTTON (bottom right) -->
+<button id="plus" onclick="openModal()" style="position:fixed;bottom:20px;right:20px;background:#ff00ff;width:70px;height:70px;border-radius:50%;font-size:40px;color:white;border:none;box-shadow:0 0 50px #ff00ff;z-index:100;cursor:pointer;">+</button>
+
+<!-- DARK OVERLAY -->
+<div id="overlay" onclick="closeModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99;"></div>
+
+<!-- POST MOVIE POPUP -->
+<div id="modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#200040;padding:30px;border-radius:20px;width:90%;max-width:400px;box-shadow:0 0 80px #ff00ff;z-index:100;">
+    <h2 style="color:#ff00ff;text-align:center;">Leak Movie</h2>
+    <input type="text" id="name" placeholder="Movie name" style="width:100%;padding:15px;margin:10px 0;border-radius:12px;border:none;font-size:16px;">
+    <input type="url" id="url" placeholder="Vidify / YouTube / MP4 link" style="width:100%;padding:15px;margin:10px 0;border-radius:12px;border:none;font-size:16px;">
+    <button onclick="leak()" style="width:100%;padding:15px;background:#ff00ff;color:white;border:none;border-radius:12px;font-size:16px;cursor:pointer;">POST MOVIE</button>
+    <button onclick="closeModal()" style="width:100%;padding:15px;background:#666;color:white;border:none;border-radius:12px;margin-top:10px;cursor:pointer;">Cancel</button>
+</div>
+
+<!-- WHERE MOVIES APPEAR -->
+<div id="grid" style="padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;"></div>
+
+<script>
+function openModal() {
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('modal').style.display = 'block';
+}
+function closeModal() {
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('name').value = '';
+    document.getElementById('url').value = '';
+}
+
+function leak() {
+    const name = document.getElementById('name').value.trim();
+    const url = document.getElementById('url').value.trim();
+    if (!name || !url) return alert("Fill both fields!");
+
+    let player;
+    if (url.includes('vidify.top')) {
+        player = `<iframe src="${url}" allowfullscreen style="width:100%;height:250px;border:none;"></iframe>`;
+    } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        const embedUrl = url.replace('watch?v=', 'embed/').split('&')[0];
+        player = `<iframe src="${embedUrl}" allowfullscreen style="width:100%;height:250px;border:none;"></iframe>`;
+    } else {
+        player = `<video controls style="width:100%;height:250px;"><source src="${url}"></video>`;
+    }
+
+    const card = `
+        <div style="background:rgba(100,0,180,0.5);border-radius:15px;overflow:hidden;">
+            ${player}
+            <div style="padding:10px;color:#ff00ff;font-weight:bold;">${name}</div>
+        </div>
+    `;
+
+    document.getElementById('grid').insertAdjacentHTML('beforeend', card);
+    closeModal();
+}
+</script>
