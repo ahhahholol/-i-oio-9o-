@@ -9,9 +9,11 @@
         body{background:#0a001a;color:#e0c0ff;font-family:system-ui;overflow:hidden;height:100vh;position:relative;}
         canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
         #grid{padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;height:100vh;overflow-y:auto;}
-        .card{background:rgba(100,0,180,0.5);border-radius:15px;overflow:hidden;}
+        .card{background:rgba(100,0,180,0.5);border-radius:15px;overflow:hidden;position:relative;}
         iframe,video{width:100%;height:250px;border:none;}
         .title{padding:10px;color:#ff00ff;font-weight:bold;text-align:center;}
+        .del{position:absolute;top:8px;right:8px;background:#ff0066;padding:6px 10px;border-radius:8px;cursor:pointer;display:none;}
+        .card:hover .del{display:block;}
         #plus{position:fixed;bottom:20px;right:20px;background:#ff00ff;width:70px;height:70px;border-radius:50%;font-size:40px;color:white;border:none;box-shadow:0 0 50px #ff00ff;z-index:100;cursor:pointer;}
         #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99;}
         #modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#200040;padding:30px;border-radius:20px;width:90%;max-width:400px;box-shadow:0 0 80px #ff00ff;z-index:100;}
@@ -36,6 +38,12 @@
 <div id="grid"></div>
 
 <script>
+// Load movies from localStorage
+let movies = JSON.parse(localStorage.getItem("volixyMovies") || "[]");
+movies.forEach(m => addMovie(m.name, m.url, m.id));
+
+let movieId = movies.length;
+
 function openModal() {
     document.getElementById('overlay').style.display = 'block';
     document.getElementById('modal').style.display = 'block';
@@ -46,17 +54,39 @@ function closeModal() {
     document.getElementById('name').value = '';
     document.getElementById('url').value = '';
 }
+
 function leak() {
     const name = document.getElementById('name').value.trim();
     const url = document.getElementById('url').value.trim();
     if (!name || !url) return alert("Fill both!");
 
+    movieId++;
+    addMovie(name, url, movieId);
+    movies.push({id: movieId, name, url});
+    localStorage.setItem("volixyMovies", JSON.stringify(movies));
+    closeModal();
+}
+
+function addMovie(name, url, id) {
     let player = url.includes('vidify.top') ? `<iframe src="${url}" allowfullscreen></iframe>` :
                  url.includes('youtube.com') || url.includes('youtu.be') ? `<iframe src="${url.replace('watch?v=','embed/').split('&')[0]}"></iframe>` :
                  `<video controls><source src="${url}"></video>`;
 
-    document.getElementById('grid').innerHTML += `<div class="card">${player}<div class="title">${name}</div></div>`;
-    closeModal();
+    document.getElementById('grid').innerHTML += `
+        <div class="card">
+            ${player}
+            <div class="title">${name}</div>
+            <div class="del" onclick="deleteMovie(${id})">X</div>
+        </div>
+    `;
+}
+
+function deleteMovie(id) {
+    if (confirm("Delete this movie?")) {
+        movies = movies.filter(m => m.id !== id);
+        localStorage.setItem("volixyMovies", JSON.stringify(movies));
+        location.reload();
+    }
 }
 
 // Snow background
