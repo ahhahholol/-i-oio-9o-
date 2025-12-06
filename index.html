@@ -29,15 +29,18 @@
 
 <canvas></canvas>
 
+<!-- PLUS BUTTON -->
 <button id="plus" onclick="openModal()">+</button>
+
+<!-- DARK OVERLAY -->
 <div id="overlay" onclick="closeModal()"></div>
 
-<!-- POST MOVIE POPUP 
+<!-- POST MOVIE POPUP (NOW WITH CORRECT IDs) -->
 <div id="modal">
     <h2 style="color:#ff00ff;text-align:center;margin-bottom:20px;">Leak a Movie</h2>
     <input type="text" id="movieName" placeholder="Movie name (ex: Joker 2019)">
     <input type="url" id="movieURL" placeholder="Movie link (Vidify, YouTube, MP4)">
-    <input type="url" id="movieIMG" placeholder="Movie image link (Google it → right click → copy image address)">
+    <input type="url" id="movieIMG" placeholder="Movie image link (Google → right click → copy image address)">
     <button onclick="postMovie()">POST MOVIE</button>
     <button onclick="closeModal()">Cancel</button>
 </div>
@@ -51,7 +54,7 @@
 <div id="grid"></div>
 
 <script>
-// Load saved movies
+// Load movies from localStorage
 let movies = JSON.parse(localStorage.getItem("volixyMovies") || "[]");
 let nextId = movies.length ? Math.max(...movies.map(m=>m.id)) + 1 : 1;
 
